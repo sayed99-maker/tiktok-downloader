@@ -3,7 +3,7 @@ const axios = require('axios');
 module.exports = async (req, res) => {
   try {
     const { url } = req.query;
-    
+
     if (!url.includes('tiktok.com')) {
       return res.status(400).json({ error: 'رابط تيك توك غير صحيح' });
     }
