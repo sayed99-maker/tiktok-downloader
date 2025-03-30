@@ -1,120 +1,344 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تنزيل فيديوهات تيك توك بدون علامة مائية</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      text-align: center;
-      padding: 20px;
-      direction: rtl;
-    }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    input {
-      width: 90%;
-      padding: 12px;
-      margin: 10px 0;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-    button {
-      background: #25F4EE;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
-      margin: 5px;
-    }
-    button:hover {
-      background: #20D8D2;
-    }
-    button:disabled {
-      background: #cccccc;
-      cursor: not-allowed;
-    }
-    #result {
-      margin-top: 20px;
-      padding: 15px;
-    }
-    video {
-      max-width: 100%;
-      border-radius: 8px;
-    }
-    .loading {
-      display: none;
-      color: #25F4EE;
-      font-weight: bold;
-      margin: 10px 0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تنزيل فيديوهات تيك توك بدون علامة مائية</title>
+    <style>
+        :root {
+            --primary: #25F4EE;
+            --secondary: #FE2C55;
+            --dark: #121212;
+            --light: #f8f9fa;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            font-size: 24px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+        }
+        
+        .input-group {
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background-color: #f8f9fa;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 244, 238, 0.2);
+        }
+        
+        button {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px 5px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:disabled {
+            background: #cccccc;
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        
+        .result-container {
+            margin-top: 30px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        video {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+        
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .success {
+            color: #28a745;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* للهواتف */
+        @media (max-width: 576px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            button {
+                padding: 10px 20px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>تنزيل فيديو تيك توك بدون علامة مائية</h1>
-    <input type="text" id="videoUrl" placeholder="الصق رابط فيديو تيك توك هنا">
-    <button onclick="downloadVideo()">تحميل</button>
-    
-    <div id="loading" class="loading"></div>
-    <div id="result"></div>
-  </div>
-
-  <script>
-    async function downloadVideo() {
-      const url = document.getElementById("videoUrl").value.trim();
-      const resultDiv = document.getElementById("result");
-      const loadingDiv = document.getElementById("loading");
-      
-      if (!url) {
-        resultDiv.innerHTML = '<p style="color:red;">⚠️ الرجاء إدخال رابط الفيديو أولاً</p>';
-        return;
-      }
-
-      // إظهار حالة التحميل
-      loadingDiv.style.display = 'block';
-      loadingDiv.textContent = "جاري البحث عن الفيديو...";
-      resultDiv.innerHTML = '';
-
-      try {
-        // استخدام API بديل يعمل حالياً
-        const apiUrl = `https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`;
+    <div class="container">
+        <div class="logo">TT</div>
+        <h1>تنزيل فيديوهات تيك توك بدون علامة مائية</h1>
         
-        const response = await fetch(apiUrl);
-        const data = await response.json();
+        <div class="input-group">
+            <input type="text" id="videoUrl" placeholder="الصق رابط فيديو تيك توك هنا...">
+        </div>
         
-        if (data.videoUrl) {
-          resultDiv.innerHTML = `
-            <video controls>
-              <source src="${data.videoUrl}" type="video/mp4">
-              المتصفح لا يدعم تشغيل الفيديو
-            </video>
-            <br><br>
-            <button onclick="location.href='${data.videoUrl}'" download>تنزيل الفيديو</button>
-          `;
-        } else {
-          throw new Error("لم يتم العثور على الفيديو");
+        <button id="downloadBtn" onclick="downloadVideo()">تحميل الفيديو</button>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p id="loadingText">جاري معالجة طلبك...</p>
+        </div>
+        
+        <div class="error" id="error"></div>
+        <div class="success" id="success"></div>
+        
+        <div class="result-container" id="resultContainer">
+            <video controls id="videoPlayer"></video>
+            <button onclick="downloadCurrentVideo()">تنزيل الفيديو</button>
+            <button onclick="copyVideoLink()">نسخ الرابط</button>
+        </div>
+    </div>
+
+    <script>
+        let currentVideoData = null;
+        
+        async function downloadVideo() {
+            const url = document.getElementById("videoUrl").value.trim();
+            const downloadBtn = document.getElementById("downloadBtn");
+            const loading = document.getElementById("loading");
+            const loadingText = document.getElementById("loadingText");
+            const error = document.getElementById("error");
+            const success = document.getElementById("success");
+            const resultContainer = document.getElementById("resultContainer");
+            const videoPlayer = document.getElementById("videoPlayer");
+            
+            // إخفاء العناصر
+            error.style.display = 'none';
+            success.style.display = 'none';
+            resultContainer.style.display = 'none';
+            
+            // التحقق من الرابط
+            if (!url) {
+                showError("الرجاء إدخال رابط الفيديو أولاً");
+                return;
+            }
+            
+            if (!url.includes("tiktok.com") && !url.includes("douyin.com")) {
+                showError("الرجاء إدخال رابط تيك توك صحيح");
+                return;
+            }
+            
+            // إظهار حالة التحميل
+            downloadBtn.disabled = true;
+            loading.style.display = 'block';
+            loadingText.textContent = "جاري البحث عن الفيديو...";
+            
+            try {
+                // استخدام واجهات API احتياطية
+                const apis = [
+                    `https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`,
+                    `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`,
+                    `https://tikcdn.io/api/?url=${encodeURIComponent(url)}`
+                ];
+                
+                let response;
+                let data;
+                
+                // تجربة جميع واجهات API حتى تعمل واحدة
+                for (const api of apis) {
+                    try {
+                        response = await fetch(api);
+                        if (response.ok) {
+                            data = await response.json();
+                            if (data.videoUrl || data.data?.play) {
+                                break;
+                            }
+                        }
+                    } catch (e) {
+                        console.log(`API ${api} failed, trying next...`);
+                    }
+                }
+                
+                if (!response || !response.ok) {
+                    throw new Error("فشل الاتصال بالخادم");
+                }
+                
+                if (!data.videoUrl && !data.data?.play) {
+                    throw new Error("لم يتم العثور على الفيديو");
+                }
+                
+                // حفظ بيانات الفيديو
+                currentVideoData = {
+                    url: data.videoUrl || data.data.play,
+                    id: data.id || Date.now().toString(),
+                    author: data.author || "غير معروف"
+                };
+                
+                // عرض الفيديو
+                videoPlayer.src = currentVideoData.url;
+                resultContainer.style.display = 'block';
+                showSuccess("تم العثور على الفيديو بنجاح!");
+                
+            } catch (error) {
+                console.error("Error:", error);
+                showError(`حدث خطأ: ${error.message}`);
+            } finally {
+                downloadBtn.disabled = false;
+                loading.style.display = 'none';
+            }
         }
-      } catch (error) {
-        resultDiv.innerHTML = `
-          <p style="color:red;">❌ حدث خطأ: ${error.message}</p>
-          <p>جرب رابط فيديو آخر أو حاول لاحقاً</p>
-        `;
-      } finally {
-        loadingDiv.style.display = 'none';
-      }
-    }
-  </script>
+        
+        function downloadCurrentVideo() {
+            if (!currentVideoData) {
+                showError("لا يوجد فيديو جاهز للتنزيل");
+                return;
+            }
+            
+            const a = document.createElement('a');
+            a.href = currentVideoData.url;
+            a.download = `tiktok_${currentVideoData.id}.mp4`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            showSuccess("بدأ تنزيل الفيديو...");
+        }
+        
+        function copyVideoLink() {
+            if (!currentVideoData) {
+                showError("لا يوجد رابط فيديو متاح");
+                return;
+            }
+            
+            navigator.clipboard.writeText(currentVideoData.url).then(() => {
+                showSuccess("تم نسخ رابط الفيديو!");
+            }).catch(err => {
+                showError("فشل نسخ الرابط: " + err.message);
+            });
+        }
+        
+        function showError(message) {
+            const error = document.getElementById("error");
+            error.textContent = message;
+            error.style.display = 'block';
+        }
+        
+        function showSuccess(message) {
+            const success = document.getElementById("success");
+            success.textContent = message;
+            success.style.display = 'block';
+            setTimeout(() => {
+                success.style.display = 'none';
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
