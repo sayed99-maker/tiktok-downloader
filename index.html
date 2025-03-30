@@ -203,7 +203,6 @@
       <video controls id="videoPlayer"></video>
       <button onclick="downloadCurrentVideo()">تنزيل الفيديو</button>
       <button onclick="copyVideoLink()">نسخ الرابط</button>
-      <button onclick="openInTikTok()">فتح في تيك توك</button>
     </div>
   </div>
 
@@ -234,32 +233,18 @@
       loadingText.textContent = "جاري البحث عن الفيديو...";
 
       try {
-        const apis = [
-          `https://tiktok-downloader-xude-rhnc2u9wj-sayeds-projects-8993cfef.vercel.app/api/download?url=${encodeURIComponent(url)}`
-        ];
+        const proxy = "https://tiktok-downloader-xude.vercel.app/api/tikwm?url=" + encodeURIComponent(url);
+        const response = await fetch(proxy);
+        const data = await response.json();
 
-        let response, data;
-
-        for (const api of apis) {
-          try {
-            response = await fetch(api);
-            if (response.ok) {
-              data = await response.json();
-              if (data.videoUrl || data.data?.play) break;
-            }
-          } catch (e) {
-            console.log(`API ${api} failed`);
-          }
-        }
-
-        if (!response || !response.ok || (!data.videoUrl && !data.data?.play)) {
+        if (!data || !data.data || !data.data.play) {
           throw new Error("لم يتم العثور على الفيديو");
         }
 
         currentVideoData = {
-          url: data.videoUrl || data.data.play,
-          id: data.id || Date.now().toString(),
-          author: data.author || "غير معروف"
+          url: data.data.play,
+          id: data.data.id || Date.now().toString(),
+          author: data.data.author || "غير معروف"
         };
 
         videoPlayer.src = currentVideoData.url;
@@ -277,26 +262,17 @@
       if (!currentVideoData) return showError("لا يوجد فيديو جاهز للتنزيل");
       const a = document.createElement('a');
       a.href = currentVideoData.url;
-      a.setAttribute("target", "_
-a.setAttribute("target", "_blank");
-      a.setAttribute("download", `tiktok_${currentVideoData.id}.mp4`);
+      a.download = `tiktok_${currentVideoData.id}.mp4`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
     }
 
-    function copyVideoLink() {
+    function copyVideoLink() {function copyVideoLink() {
       if (!currentVideoData) return showError("لا يوجد رابط لنسخه");
-      navigator.clipboard.writeText(currentVideoData.url).then(() => {
-        showSuccess("تم نسخ الرابط إلى الحافظة!");
-      }).catch(() => {
-        showError("فشل نسخ الرابط");
-      });
-    }
-
-    function openInTikTok() {
-      if (!currentVideoData) return showError("لا يوجد فيديو لفتحه");
-      window.open(currentVideoData.url, "_blank");
+      navigator.clipboard.writeText(currentVideoData.url)
+        .then(() => showSuccess("تم نسخ رابط الفيديو!"))
+        .catch(() => showError("حدث خطأ أثناء نسخ الرابط"));
     }
 
     function showError(message) {
